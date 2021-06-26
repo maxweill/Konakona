@@ -10,10 +10,10 @@ Please feel free to use it as you wish for your own bot.
 
 ### Setup
 
-Get the requirements with:\
+Get the requirements with:
 `pip install -r requirements.txt`
 
 To run the code every 30 minutes use cronjob. It should look something like this.\
 
-**On Linux:**\
+**On Linux:**
 `*/30 * * * * python3 run.py`
