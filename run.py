@@ -7,7 +7,7 @@ import twitter
 
 # video path  & etc.
 directory = "/PATH/TO/VIDEO/FOLDER/"
-tmpfilename = "out.jpg"
+tmpfile = "out.jpg"
 
 # twitter keys
 CONSUMER_KEY_INPUT = 'ENTER_CONSUMER_KEY_INPUT'
@@ -17,7 +17,7 @@ ACCESS_TOKEN_SECRET_INPUT = 'ENTER_ACCESS_TOKEN_SECRET_INPUT'
 
 
 # randomly select an mkv video from input directory
-def getRandomVideoFilePath(directory):
+def get_random_video_filepath(directory):
     outdir = ''
     while not outdir.endswith("mkv"):
         out1 = random.choice(os.listdir(directory))
@@ -30,23 +30,23 @@ def getRandomVideoFilePath(directory):
 
 
 # use ffmpeg to generate screenshot at timestamp
-def generateRandomScreenShotLocally(filepath):
-    randomTime = random.uniform(0.00, getLength(filepath))
+def generate_random_screenshot_locally(filepath):
+    random_time = random.uniform(0.00, get_length(filepath))
     command_img = [
         'ffmpeg', '-y',
-        '-ss', str(randomTime),
+        '-ss', str(random_time),
         '-i', filepath,
         '-vframes', '1',
         '-vf', 'scale=1920:1080',
         '-q:v', '1',
         '-qmin', '1',
-        tmpfilename
+        tmpfile
     ]
     subprocess.call(command_img)
 
 
 # use ffprobe to get the length of the video
-def getLength(filepath):
+def get_length(filepath):
     command_info = [
         'ffprobe',
         '-i', filepath,
@@ -58,15 +58,16 @@ def getLength(filepath):
     return float(duration)
 
 
-def postImage():
+# uploads the screenshot to twitter
+def post_image():
     api = twitter.Api(consumer_key=CONSUMER_KEY_INPUT,
                       consumer_secret=CONSUMER_SECRET_INPUT,
                       access_token_key=ACCESS_TOKEN_KEY_INPUT,
                       access_token_secret=ACCESS_TOKEN_SECRET_INPUT)
-    return api.PostUpdate("", tmpfilename)
+    return api.PostUpdate("", tmpfile)
 
 
 if __name__ == '__main__':
-    filepath = directory + getRandomVideoFilePath(directory)
-    generateRandomScreenShotLocally(filepath)
-    postImage()
+    filepath = directory + get_random_video_filepath(directory)
+    generate_random_screenshot_locally(filepath)
+    post_image()
