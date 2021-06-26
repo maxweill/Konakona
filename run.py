@@ -9,7 +9,8 @@ import twitter
 directory = '/PATH/TO/VIDEO/FOLDER/'
 tmpfile_img = 'out.jpg'
 tmpfile_vid = 'out.mp4'
-video = True
+clip_length = '5'
+video_chance = 0.5
 
 # twitter keys
 CONSUMER_KEY_INPUT = 'ENTER_CONSUMER_KEY_INPUT'
@@ -49,13 +50,20 @@ def generate_random_screenshot_locally(filepath):
 
 # use ffmpeg to generate 5 sec video at timestamp
 def generate_random_gif_locally(filepath):
-    random_time = random.uniform(0.00, get_length(filepath)-5)
+    random_time = random.uniform(0.00, get_length(filepath)-float(clip_length))
     command_vid = [
         'ffmpeg', '-y',
         '-ss', str(random_time),
         '-i', filepath,
-        # '-ac', '1',
-        '-t', '5',
+        '-t', str(clip_length),
+        '-ac', '2',
+        '-sn',
+        '-map_chapters', '-1',
+        '-c:v', 'libx264',
+        '-c:a', 'aac',
+        '-vf', 'scale=720:1280',
+        '-pix_fmt', 'yuv420p',
+        '-movflags', '+faststart',
         tmpfile_vid
     ]
     subprocess.call(command_vid)
@@ -86,14 +94,13 @@ def post_image(tmpfile):
 # checks is it's a screenshot or gif
 def check_video():
     filepath = directory + get_random_video_filepath(directory)
-    if video is False:
-        generate_random_screenshot_locally(filepath)
-        return tmpfile_img
-    elif video is True:
+    r = random.random()
+    if r <= video_chance:
         generate_random_gif_locally(filepath)
         return tmpfile_vid
     else:
-        print('you messed up chief')
+        generate_random_screenshot_locally(filepath)
+        return tmpfile_img
 
 
 if __name__ == '__main__':
