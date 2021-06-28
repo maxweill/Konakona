@@ -5,10 +5,8 @@ import subprocess
 import twitter
 
 
-# video path & etc.
+# settings
 directory = '/PATH/TO/VIDEO/FOLDER/'
-tmpfile_img = 'out.jpg'
-tmpfile_vid = 'out.mp4'
 clip_length = '5'
 video_chance = 0.5
 
@@ -18,17 +16,22 @@ CONSUMER_SECRET_INPUT = 'ENTER_CONSUMER_SECRET_INPUT'
 ACCESS_TOKEN_KEY_INPUT = 'ENTER_ACCESS_TOKEN_KEY_INPUT'
 ACCESS_TOKEN_SECRET_INPUT = 'ENTER_ACCESS_TOKEN_SECRET_INPUT'
 
+# etc.
+tmpfile_img = 'out.jpg'
+tmpfile_vid = 'out.mp4'
 
 # randomly select an mkv video from input directory
+# look at help diagram to understand which use cases are supported
 def get_random_video_filepath(directory):
     outdir = ''
-    while not outdir.endswith('mkv'):
-        out1 = random.choice(os.listdir(directory))
-        if out1.endswith('mkv'):
-            outdir = out1
+    direc = directory
+    while os.path.isdir(direc):
+        outdir += random.choice(os.listdir(direc))
+        if outdir.endswith('mkv'):
             break
-        out2 = random.choice(os.listdir(directory + out1))
-        outdir = out1 + '/' + out2
+        else:
+            outdir += '/'
+            direc += outdir
     return outdir
 
 
@@ -48,8 +51,8 @@ def generate_random_screenshot_locally(filepath):
     subprocess.call(command_img)
 
 
-# use ffmpeg to generate 5 sec video at timestamp
-def generate_random_gif_locally(filepath):
+# use ffmpeg to generate 5 sec clip at timestamp
+def generate_random_clip_locally(filepath):
     random_time = random.uniform(0.00, get_length(filepath)-float(clip_length))
     command_vid = [
         'ffmpeg', '-y',
@@ -69,7 +72,7 @@ def generate_random_gif_locally(filepath):
     subprocess.call(command_vid)
 
 
-# use ffprobe to get the length of the video
+# use ffprobe to get the length of the mkv
 def get_length(filepath):
     command_info = [
         'ffprobe',
@@ -82,8 +85,8 @@ def get_length(filepath):
     return float(duration)
 
 
-# uploads the screenshot to twitter
-def post_image(tmpfile):
+# uploads the screenshot/clip to twitter
+def post_update(tmpfile):
     api = twitter.Api(consumer_key=CONSUMER_KEY_INPUT,
                       consumer_secret=CONSUMER_SECRET_INPUT,
                       access_token_key=ACCESS_TOKEN_KEY_INPUT,
@@ -91,12 +94,12 @@ def post_image(tmpfile):
     return api.PostUpdate('', tmpfile)
 
 
-# checks is it's a screenshot or gif
+# checks is it's a screenshot or clip
 def check_video():
     filepath = directory + get_random_video_filepath(directory)
     r = random.random()
     if r <= video_chance:
-        generate_random_gif_locally(filepath)
+        generate_random_clip_locally(filepath)
         return tmpfile_vid
     else:
         generate_random_screenshot_locally(filepath)
@@ -104,4 +107,4 @@ def check_video():
 
 
 if __name__ == '__main__':
-    post_image(check_video())
+    post_update(check_video())
