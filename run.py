@@ -20,6 +20,7 @@ ACCESS_TOKEN_SECRET_INPUT = 'ENTER_ACCESS_TOKEN_SECRET_INPUT'
 tmpfile_img = 'out.jpg'
 tmpfile_vid = 'out.mp4'
 
+
 # randomly select an mkv video from input directory
 # look at help diagram to understand which use cases are supported
 def get_random_video_filepath(directory):
@@ -43,7 +44,7 @@ def generate_random_screenshot_locally(filepath):
         '-ss', str(random_time),
         '-i', filepath,
         '-vframes', '1',
-        '-vf', 'scale=1920:1080',
+        '-vf', 'scale=1920:-1',
         '-q:v', '1',
         '-qmin', '1',
         tmpfile_img
@@ -53,7 +54,7 @@ def generate_random_screenshot_locally(filepath):
 
 # use ffmpeg to generate 5 sec clip at timestamp
 def generate_random_clip_locally(filepath):
-    random_time = random.uniform(0.00, get_length(filepath)-float(clip_length))
+    random_time = random.uniform(0.00, get_length(filepath) - float(clip_length))
     command_vid = [
         'ffmpeg', '-y',
         '-ss', str(random_time),
@@ -64,7 +65,7 @@ def generate_random_clip_locally(filepath):
         '-map_chapters', '-1',
         '-c:v', 'libx264',
         '-c:a', 'aac',
-        '-vf', 'scale=720:1280',
+        '-vf', 'scale=1280:-1',
         '-pix_fmt', 'yuv420p',
         '-movflags', '+faststart',
         tmpfile_vid
