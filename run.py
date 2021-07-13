@@ -50,7 +50,7 @@ def generate_random_screenshot_locally(filepath):
         tmpfile_img
     ]
     subprocess.call(command_img)
-
+    return tmpfile_img
 
 # use ffmpeg to generate 5 sec clip at timestamp
 def generate_random_clip_locally(filepath):
@@ -71,7 +71,7 @@ def generate_random_clip_locally(filepath):
         tmpfile_vid
     ]
     subprocess.call(command_vid)
-
+    return tmpfile_vid
 
 # use ffprobe to get the length of the mkv
 def get_length(filepath):
@@ -95,17 +95,27 @@ def post_update(tmpfile):
     return api.PostUpdate('', tmpfile)
 
 
-# checks is it's a screenshot or clip
+# checks if we should generate a screenshot or clip
 def check_video():
-    filepath = directory + get_random_video_filepath(directory)
     r = random.random()
     if r <= video_chance:
-        generate_random_clip_locally(filepath)
-        return tmpfile_vid
+        return True
     else:
-        generate_random_screenshot_locally(filepath)
-        return tmpfile_img
-
+        return False
+        
 
 if __name__ == '__main__':
-    post_update(check_video())
+	# find our random video by parsing directory
+    filepath = directory + get_random_video_filepath(directory)
+    
+    #determine if we should generate a video or screenshot
+    shouldGenerateVideo = check_video()
+    
+    #generate output file
+    if shouldGenerateVideo:
+        output=generate_random_clip_locally(filepath)
+    else:
+        output=generate_random_screenshot_locally(filepath)
+    
+    #post to twitter.
+    post_update(output)
