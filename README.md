@@ -39,4 +39,5 @@ There are also API keys that you must fill out. You will need to sign up for a t
 * Allow arbitrary file formats (right now .mkv as an input is hardcoded).
 * Add FOSS license.
 * Switch to .cfg file instead of editing python variables (maybe?)
+* Burn in subtitles. (Currently soft-subtitles are not supported).
  
