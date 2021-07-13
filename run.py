@@ -4,7 +4,6 @@ import subprocess
 
 import twitter
 
-
 # settings
 directory = '/PATH/TO/VIDEO/FOLDER/'
 clip_length = '5'
@@ -52,6 +51,7 @@ def generate_random_screenshot_locally(filepath):
     subprocess.call(command_img)
     return tmpfile_img
 
+
 # use ffmpeg to generate 5 sec clip at timestamp
 def generate_random_clip_locally(filepath):
     random_time = random.uniform(0.00, get_length(filepath) - float(clip_length))
@@ -72,6 +72,7 @@ def generate_random_clip_locally(filepath):
     ]
     subprocess.call(command_vid)
     return tmpfile_vid
+
 
 # use ffprobe to get the length of the mkv
 def get_length(filepath):
@@ -102,20 +103,20 @@ def check_video():
         return True
     else:
         return False
-        
+
 
 if __name__ == '__main__':
-	# find our random video by parsing directory
+    # find our random video by parsing directory
     filepath = directory + get_random_video_filepath(directory)
-    
-    #determine if we should generate a video or screenshot
+
+    # determine if we should generate a video or screenshot
     shouldGenerateVideo = check_video()
-    
-    #generate output file
+
+    # generate output file
     if shouldGenerateVideo:
-        output=generate_random_clip_locally(filepath)
+        output = generate_random_clip_locally(filepath)
     else:
-        output=generate_random_screenshot_locally(filepath)
-    
-    #post to twitter.
+        output = generate_random_screenshot_locally(filepath)
+
+    # post to twitter
     post_update(output)
