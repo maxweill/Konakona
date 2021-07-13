@@ -11,10 +11,10 @@ Additionally, rather than a screenshot, the bot can also generate videos from th
 
 ### How To Use
 
-First, get the requirements with:\
+First, get the requirements with:
 `pip install -r requirements.txt`
 
-YouI personally run the bot as a cronjob on my home server. There are other solutions to do this, but I simply have the bot run every 30 minutes using the cronjob. It looks something like this.\
+I personally run the bot as a cronjob on my home server. There are other solutions to do this, but I simply have the bot run every 30 minutes with the cronjob. The job config looks something like this.\
 
 **On Linux:**
 `*/30 * * * * python3 run.py`
@@ -34,4 +34,9 @@ At the top of the **run.py** file are several lines of configuration. You will n
 #### API Keys
 There are also API keys that you must fill out. You will need to sign up for a twitter developer account in order to gain access to these. For more info, see Twitter's website. https://developer.twitter.com/en/docs/twitter-api/getting-started/getting-access-to-the-twitter-api
 
+### Future Enhancements
+* Do not crash/hang for bad directory inputs (no video files, invalid path).
+* Allow arbitrary file formats (right now .mkv as an input is hardcoded).
+* Add FOSS license.
+* Switch to .cfg file instead of editing python variables (maybe?)
  
