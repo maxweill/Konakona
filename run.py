@@ -2,22 +2,30 @@ import os
 import random
 import subprocess
 
+import config
 import twitter
 
+# config
+try:
+    cfg = config.Config('setting.cfg')
+except config.ConfigFormatError:
+    print('Error: Check setting.cfg')
+    exit()
+
 # settings
-directory = '/PATH/TO/VIDEO/FOLDER/'
-clip_length = '5'
-video_chance = 0.5
+directory = cfg['settings.general.directory']
+clip_length = cfg['settings.general.video.length']
+video_chance = cfg['settings.general.video.chance']
 
 # twitter keys
-CONSUMER_KEY_INPUT = 'ENTER_CONSUMER_KEY_INPUT'
-CONSUMER_SECRET_INPUT = 'ENTER_CONSUMER_SECRET_INPUT'
-ACCESS_TOKEN_KEY_INPUT = 'ENTER_ACCESS_TOKEN_KEY_INPUT'
-ACCESS_TOKEN_SECRET_INPUT = 'ENTER_ACCESS_TOKEN_SECRET_INPUT'
+CONSUMER_KEY_INPUT = cfg['settings.keys.consumer.key']
+CONSUMER_SECRET_INPUT = cfg['settings.keys.consumer.secret']
+ACCESS_TOKEN_KEY_INPUT = cfg['settings.keys.access.key']
+ACCESS_TOKEN_SECRET_INPUT = cfg['settings.keys.access.secret']
 
 # etc.
-tmpfile_img = 'out.jpg'
-tmpfile_vid = 'out.mp4'
+tmpfile_img = cfg['settings.etc.tmpfile.img']
+tmpfile_vid = cfg['settings.etc.tmpfile.vid']
 
 
 # randomly select an mkv video from input directory
@@ -27,7 +35,7 @@ def get_random_video_filepath(directory):
     direc = directory
     while os.path.isdir(direc):
         outdir += random.choice(os.listdir(direc))
-        if outdir.endswith('mkv'):
+        if outdir.endswith(('mkv', 'mp4', 'avi')):
             break
         else:
             outdir += '/'
@@ -89,11 +97,15 @@ def get_length(filepath):
 
 # uploads the screenshot/clip to twitter
 def post_update(tmpfile):
-    api = twitter.Api(consumer_key=CONSUMER_KEY_INPUT,
-                      consumer_secret=CONSUMER_SECRET_INPUT,
-                      access_token_key=ACCESS_TOKEN_KEY_INPUT,
-                      access_token_secret=ACCESS_TOKEN_SECRET_INPUT)
-    return api.PostUpdate('', tmpfile)
+    try:
+        api = twitter.Api(consumer_key=CONSUMER_KEY_INPUT,
+                        consumer_secret=CONSUMER_SECRET_INPUT,
+                        access_token_key=ACCESS_TOKEN_KEY_INPUT,
+                        access_token_secret=ACCESS_TOKEN_SECRET_INPUT)
+        return api.PostUpdate('', tmpfile)
+    except twitter.error.TwitterError:
+        print('Error: Invalid key')
+    
 
 
 # checks if we should generate a screenshot or clip
@@ -107,16 +119,24 @@ def check_video():
 
 if __name__ == '__main__':
     # find our random video by parsing directory
-    filepath = directory + get_random_video_filepath(directory)
+    try:
+        filepath = directory + get_random_video_filepath(directory)
+    except IndexError:
+        print('Error: No video file')
+        exit()
 
     # determine if we should generate a video or screenshot
     shouldGenerateVideo = check_video()
 
     # generate output file
-    if shouldGenerateVideo:
-        output = generate_random_clip_locally(filepath)
-    else:
-        output = generate_random_screenshot_locally(filepath)
+    try:
+        if shouldGenerateVideo:
+            output = generate_random_clip_locally(filepath)
+        else:
+            output = generate_random_screenshot_locally(filepath)
+    except subprocess.CalledProcessError:
+        print('Error: Invalid file path')
+        exit()
 
     # post to twitter
     post_update(output)
