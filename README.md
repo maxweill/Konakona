@@ -9,6 +9,10 @@ Take note that if you have a directory in the same hierarchical level as video f
 
 Additionally, rather than a screenshot, the bot can also generate videos from the source material.
 
+Currently, the bot is capable of finding and parsing MKV, MP4, and AVI video files. 
+
+Other filetypes can be manually added in the function **get_random_video_filepath** at your own risk.
+
 ### How To Use
 
 First, get the requirements with:
@@ -23,21 +27,23 @@ I personally run the bot as a cronjob on my home server. There are other solutio
 Windows/Mac
 
 ### Configuration
-At the top of the **run.py** file are several lines of configuration. You will need to set these up in order for the bot to function.
+In the same directory as the run.py script is a configuration file, **settings.cfg**. You will need to modify this file in order for the bot to function.
 #### Config Variables
-*directory* - String. The path to your videos, or your folder of (folders of...) videos. Should end with a '/'.
+The settings.cfg file contains a JSON-like structure of variables. Of these variables, please note:
 
-*clip_length* - Integer. This is what the length of an outputted video clip will be, in seconds.
+*directory* - Located in the 'settings.general' tree. String. The path to your videos, or your folder of (folders of...) videos. Should end with a '/'.
 
-*video_chance* - Number. A number between 0 and 1, representing the percentage of the time the bot will produce a video instead of producing a screenshot. Set to 0 to never produce a video. Set to 1 to produce a video every time.
+*length* - Located in the 'settings.general.video' tree. Integer. This is what the length of an outputted video clip will be, in seconds.
+
+*chance* - Located in the 'settings.general.video' tree. A number between 0 and 1, representing the percentage of the time the bot will produce a video instead of producing a screenshot. Set to 0 to never produce a video. Set to 1 to produce a video every time.
 
 #### API Keys
 There are also API keys that you must fill out. You will need to sign up for a twitter developer account in order to gain access to these. For more info, see Twitter's website. https://developer.twitter.com/en/docs/twitter-api/getting-started/getting-access-to-the-twitter-api
 
+These keys & secrets should be placed in the corresponding variables in the 'settings.keys.consumer' and 'settings.keys.access' trees.
+
 ### Future Enhancements
-* Do not crash/hang for bad directory inputs (no video files, invalid path).
-* Allow arbitrary file formats (right now .mkv as an input is hardcoded).
-* Add FOSS license.
-* Switch to .cfg file instead of editing python variables (maybe?)
 * Burn in subtitles. (Currently soft-subtitles are not supported).
  
+### Licensing
+This software is free and open-source software, licensed under the GPLv3. For more information, see the LICENSE file in the repository, or check out https://www.fsf.org/

@@ -7,9 +7,9 @@ import twitter
 
 # config
 try:
-    cfg = config.Config('setting.cfg')
+    cfg = config.Config('settings.cfg')
 except config.ConfigFormatError:
-    print('Error: Check setting.cfg')
+    print('Error: Check settings.cfg')
     exit()
 
 # settings
