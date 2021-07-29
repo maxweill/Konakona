@@ -1,4 +1,4 @@
-## Konakona - An Automated Adhoc Twitter Screenshot Bot
+## Konakona - An Automated Twitter Screenshot/Video Bot
 Konakona is a generic twitter screenshot / video posting bot written in Python. This project was originally developed for [@LuckyStarPicBot](https://twitter.com/LuckyStarPicBot).
 
 ### What is this?
