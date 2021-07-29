@@ -1,5 +1,10 @@
-## Twitter Screenshot Bot
-This is a python script that runs as the back end of a twitter 'screenshot' bot. It works by first parsing through a directory and selecting a video. It then generates a screenshot at a random time from that video, and uploads it to twitter.
+## Konakona - An Automated Adhoc Twitter Screenshot Bot
+Konakona is a generic twitter screenshot / video posting bot written in Python. This project was originally developed for [@LuckyStarPicBot](https://twitter.com/LuckyStarPicBot).
+
+### What is this?
+This bot was written in order to generate a constant stream of content for a twitter bot that avoids the overhead of manual uploads or pre-clipping images and video files.
+
+It works by first parsing through a directory and selecting a video. It then uses ffmpeg to generate a screenshot at a random time from that video, then uploads it to twitter.
 
 The bot also has the ability to parse through multiple directories, so you can give it a larger organized selection of videos to choose from. 
 
@@ -15,22 +20,18 @@ Other filetypes can be manually added in the function **get_random_video_filepat
 
 ### How To Use
 
-First, you will need FFMPEG. This is tested with version n4.4, but will probably work fine with older versions.
+**First**, you will need FFMPEG. This is tested with version n4.4, but will probably work fine with older versions.
 
-Second, get the python requirements with:
+**Second**, get the python requirements with:
 `pip install -r requirements.txt`
 
-Third, you will need a method of running the script at your specified intervals. 
-I personally run the bot as a cronjob on my home server. There are other solutions to do this, but I simply have the bot run every 30 minutes with the cronjob. The job config looks something like this.
+**Third**, you will need a method of running the script at your specified intervals. 
+I personally run the bot as a cronjob on my home server. My job config is set to run at 30 minute intervals and looks something like this:
 
-**On Linux:**
 `*/30 * * * * python3 run.py`
 
-**TODO:**
-Windows/Mac
 
-
-Finally, set up the configuration file.
+**Finally**, set up the configuration file.
 
 #### Configuration
 In the same directory as the run.py script is a configuration file, **settings.cfg**. You will need to modify this file in order for the bot to function.
@@ -53,3 +54,8 @@ These keys & secrets should be placed in the corresponding variables in the 'set
  
 ### Licensing
 This software is free and open-source software, licensed under the GPLv3. For more information, see the LICENSE file in the repository, or check out https://www.fsf.org/
+
+### Thanks:
+Mevon, for his help with development and ability organize my pastebins and discord messages of ffmpeg commands. (Also check out his instance of this bot: [@MonogatariBotto](https://twitter.com/MonogatariBotto).
+
+Ophelia, for recommending that I pick Lucky Star as the source anime for the original bot.
