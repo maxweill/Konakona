@@ -56,6 +56,6 @@ These keys & secrets should be placed in the corresponding variables in the 'set
 This software is free and open-source software, licensed under the GPLv3. For more information, see the LICENSE file in the repository, or check out https://www.fsf.org/
 
 ### Thanks:
-Mevon, for his help with development and ability organize my pastebins and discord messages of ffmpeg commands. (Also check out his instance of this bot: [@MonogatariBotto](https://twitter.com/MonogatariBotto).
+Mevon, for his help with development and ability organize my pastebins and discord messages of ffmpeg commands. Check out his instance of this bot: [@MonogatariBotto](https://twitter.com/MonogatariBotto).
 
 Ophelia, for recommending that I pick Lucky Star as the source anime for the original bot.
