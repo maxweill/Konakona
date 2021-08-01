@@ -6,14 +6,17 @@ import config
 import twitter
 
 # config
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
 try:
-    cfg = config.Config('settings.cfg')
+    cfg = config.Config(os.path.join(script_dir,'settings.cfg'))
 except config.ConfigFormatError:
     print('Error: Check settings.cfg')
     exit()
 
 # settings
 directory = cfg['settings.general.directory']
+video_directory = cfg['settings.general.video.directory']
 clip_length = cfg['settings.general.video.length']
 video_chance = cfg['settings.general.video.chance']
 
@@ -24,8 +27,8 @@ ACCESS_TOKEN_KEY_INPUT = cfg['settings.keys.access.key']
 ACCESS_TOKEN_SECRET_INPUT = cfg['settings.keys.access.secret']
 
 # etc.
-tmpfile_img = cfg['settings.etc.tmpfile.img']
-tmpfile_vid = cfg['settings.etc.tmpfile.vid']
+tmpfile_img = os.path.join(script_dir,cfg['settings.etc.tmpfile.img'])
+tmpfile_vid = os.path.join(script_dir,cfg['settings.etc.tmpfile.vid'])
 
 
 # randomly select an mkv video from input directory
@@ -118,15 +121,20 @@ def check_video():
 
 
 if __name__ == '__main__':
+
+	 # determine if we should generate a video or screenshot
+    shouldGenerateVideo = check_video()
+
+	# if we are generating a video, set our working directory to the video directory if one exists.
+    if shouldGenerateVideo and video_directory:
+        directory = video_directory
+
     # find our random video by parsing directory
     try:
         filepath = directory + get_random_video_filepath(directory)
     except IndexError:
         print('Error: No video file')
         exit()
-
-    # determine if we should generate a video or screenshot
-    shouldGenerateVideo = check_video()
 
     # generate output file
     try:
