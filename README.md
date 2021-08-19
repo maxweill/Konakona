@@ -38,18 +38,20 @@ In the same directory as the run.py script is a configuration file, **settings.c
 ##### Config Variables
 The settings.cfg file contains a JSON-like structure of variables. Of these variables, please note:
 
-*directory* - Located in the 'settings.general' tree. String. The path to your videos, or your folder of (folders of...) videos. Should end with a '/'.
+*directory* - Located in the 'general' tree. String. The path to your videos, or your folder of (folders of...) videos. Should end with a '/'.
 
-*video.directory* - Located in the 'settings.general.video' tree. An alternate video tree. It works like the base tree, but, if filled out, will be the source folder for all videos. Useful for guaranteeing that videos have subtitles, for instance.
+*image.directory* - Located in the 'general.image' tree. An alternate image tree. It works like the base tree, but, if filled out, will be the source folder for all videos. Useful for pre-generated images, for instance.
 
-*length* - Located in the 'settings.general.video' tree. Integer. This is what the length of an outputted video clip will be, in seconds.
+*video.directory* - Located in the 'general.video' tree. An alternate video tree. It works like the base tree, but, if filled out, will be the source folder for all videos. Useful for guaranteeing that videos have subtitles, for instance.
 
-*chance* - Located in the 'settings.general.video' tree. A number between 0 and 1, representing the percentage of the time the bot will produce a video instead of producing a screenshot. Set to 0 to never produce a video. Set to 1 to produce a video every time.
+*length* - Located in the 'general.video' tree. Integer. This is what the length of an outputted video clip will be, in seconds.
+
+*chance* - Located in the 'general.video' tree. A number between 0 and 1, representing the percentage of the time the bot will produce a video instead of producing a screenshot. Set to 0 to never produce a video. Set to 1 to produce a video every time.
 
 ##### API Keys
 There are also API keys that you must fill out. You will need to sign up for a twitter developer account in order to gain access to these. For more info, see Twitter's website. https://developer.twitter.com/en/docs/twitter-api/getting-started/getting-access-to-the-twitter-api
 
-These keys & secrets should be placed in the corresponding variables in the 'settings.keys.consumer' and 'settings.keys.access' trees.
+These keys & secrets should be placed in the corresponding variables in the 'keys.consumer' and 'settings.keys.access' trees.
 
 ### Future Enhancements
 * Burn in subtitles. (Currently soft-subtitles are not supported).

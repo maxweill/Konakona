@@ -5,30 +5,32 @@ import subprocess
 import config
 import twitter
 
+
 # config
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 try:
-    cfg = config.Config(os.path.join(script_dir,'settings.cfg'))
+    cfg = config.Config(os.path.join(script_dir, 'settings.cfg'))
 except config.ConfigFormatError:
     print('Error: Check settings.cfg')
     exit()
 
 # settings
-directory = cfg['settings.general.directory']
-video_directory = cfg['settings.general.video.directory']
-clip_length = cfg['settings.general.video.length']
-video_chance = cfg['settings.general.video.chance']
+directory = cfg['general.directory']
+image_directory = cfg['general.image.directory']
+video_directory = cfg['general.video.directory']
+clip_length = cfg['general.video.length']
+video_chance = cfg['general.video.chance']
 
 # twitter keys
-CONSUMER_KEY_INPUT = cfg['settings.keys.consumer.key']
-CONSUMER_SECRET_INPUT = cfg['settings.keys.consumer.secret']
-ACCESS_TOKEN_KEY_INPUT = cfg['settings.keys.access.key']
-ACCESS_TOKEN_SECRET_INPUT = cfg['settings.keys.access.secret']
+CONSUMER_KEY_INPUT = cfg['keys.consumer.key']
+CONSUMER_SECRET_INPUT = cfg['keys.consumer.secret']
+ACCESS_TOKEN_KEY_INPUT = cfg['keys.access.key']
+ACCESS_TOKEN_SECRET_INPUT = cfg['keys.access.secret']
 
 # etc.
-tmpfile_img = os.path.join(script_dir,cfg['settings.etc.tmpfile.img'])
-tmpfile_vid = os.path.join(script_dir,cfg['settings.etc.tmpfile.vid'])
+tmpfile_img = os.path.join(script_dir, cfg['etc.tmpfile.img'])
+tmpfile_vid = os.path.join(script_dir, cfg['etc.tmpfile.vid'])
 
 
 # randomly select an mkv video from input directory
@@ -102,13 +104,12 @@ def get_length(filepath):
 def post_update(tmpfile):
     try:
         api = twitter.Api(consumer_key=CONSUMER_KEY_INPUT,
-                        consumer_secret=CONSUMER_SECRET_INPUT,
-                        access_token_key=ACCESS_TOKEN_KEY_INPUT,
-                        access_token_secret=ACCESS_TOKEN_SECRET_INPUT)
+                          consumer_secret=CONSUMER_SECRET_INPUT,
+                          access_token_key=ACCESS_TOKEN_KEY_INPUT,
+                          access_token_secret=ACCESS_TOKEN_SECRET_INPUT)
         return api.PostUpdate('', tmpfile)
     except twitter.error.TwitterError:
         print('Error: Invalid key')
-    
 
 
 # checks if we should generate a screenshot or clip
@@ -122,12 +123,15 @@ def check_video():
 
 if __name__ == '__main__':
 
-	 # determine if we should generate a video or screenshot
-    shouldGenerateVideo = check_video()
+    # determine if we should generate a video or screenshot
+    should_generate_video = check_video()
 
-	# if we are generating a video, set our working directory to the video directory if one exists.
-    if shouldGenerateVideo and video_directory:
+    # if we are generating a video, set our working directory to the video directory if one exists.
+    if should_generate_video and video_directory:
         directory = video_directory
+    # and if we are generating an image, set our working directory to the image directory if one exists.
+    elif not should_generate_video and image_directory:
+        directory = image_directory
 
     # find our random video by parsing directory
     try:
@@ -138,8 +142,10 @@ if __name__ == '__main__':
 
     # generate output file
     try:
-        if shouldGenerateVideo:
+        if should_generate_video:
             output = generate_random_clip_locally(filepath)
+        elif image_directory:
+            output = filepath
         else:
             output = generate_random_screenshot_locally(filepath)
     except subprocess.CalledProcessError:
