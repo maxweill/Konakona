@@ -40,6 +40,8 @@ The settings.cfg file contains a JSON-like structure of variables. Of these vari
 
 *directory* - Located in the 'general' tree. String. The path to your videos, or your folder of (folders of...) videos. Should end with a '/'.
 
+*save* - Located in the 'general' tree. Boolean. Choose whether images/clips should be saved or not. Output files get renamed and moved to the media folder. The format of the filename is %Y%m%d-%H%M%S(year,month,day-hour,minute,second).
+
 *image.directory* - Located in the 'general.image' tree. An alternate image tree. It works like the base tree, but, if filled out, will be the source folder for all videos. Useful for pre-generated images, for instance.
 
 *video.directory* - Located in the 'general.video' tree. An alternate video tree. It works like the base tree, but, if filled out, will be the source folder for all videos. Useful for guaranteeing that videos have subtitles, for instance.

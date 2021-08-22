@@ -1,5 +1,7 @@
 import os
 import random
+import shutil
+import datetime
 import subprocess
 
 import config
@@ -17,6 +19,7 @@ except config.ConfigFormatError:
 
 # settings
 directory = cfg['general.directory']
+save = cfg['general.save']
 image_directory = cfg['general.image.directory']
 video_directory = cfg['general.video.directory']
 clip_length = cfg['general.video.length']
@@ -29,8 +32,11 @@ ACCESS_TOKEN_KEY_INPUT = cfg['keys.access.key']
 ACCESS_TOKEN_SECRET_INPUT = cfg['keys.access.secret']
 
 # etc.
+now = datetime.datetime.now()
 tmpfile_img = os.path.join(script_dir, cfg['etc.tmpfile.img'])
 tmpfile_vid = os.path.join(script_dir, cfg['etc.tmpfile.vid'])
+tmpfile_img_alt = os.path.join(script_dir, cfg['etc.tmpfile_alt.img'], now.strftime('%Y%m%d-%H%M%S.jpg'))
+tmpfile_vid_alt = os.path.join(script_dir, cfg['etc.tmpfile_alt.vid'], now.strftime('%Y%m%d-%H%M%S.mp4'))
 
 
 # randomly select an mkv video from input directory
@@ -154,3 +160,9 @@ if __name__ == '__main__':
 
     # post to twitter
     post_update(output)
+
+    # save the image/video clip
+    if should_generate_video and save:
+        shutil.move(output, tmpfile_vid_alt)
+    elif save:
+        shutil.move(output, tmpfile_img_alt)
