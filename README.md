@@ -10,7 +10,7 @@ The bot also has the ability to parse through multiple directories, so you can g
 
 Take note that if you have a directory in the same hierarchical level as video files, it is significantly more likely that you will pull from the videos rather than parse the directory, since the bot stops parsing once it finds a video.
 
-![Explanation](/help_diagram.png)
+![Explanation](/doc/help_diagram.png)
 
 Additionally, rather than a screenshot, the bot can also generate videos from the source material.
 
@@ -51,7 +51,7 @@ The settings.cfg file contains a JSON-like structure of variables. Of these vari
 ##### API Keys
 There are also API keys that you must fill out. You will need to sign up for a twitter developer account in order to gain access to these. For more info, see Twitter's website. https://developer.twitter.com/en/docs/twitter-api/getting-started/getting-access-to-the-twitter-api
 
-These keys & secrets should be placed in the corresponding variables in the 'keys.consumer' and 'settings.keys.access' trees.
+These keys & secrets should be placed in the corresponding variables in the 'keys.consumer' and 'keys.access' trees.
 
 ### Future Enhancements
 * Burn in subtitles. (Currently soft-subtitles are not supported).
