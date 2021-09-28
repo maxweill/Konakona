@@ -28,13 +28,13 @@ Other filetypes can be manually added in the function **get_random_video_filepat
 **Third**, you will need a method of running the script at your specified intervals. 
 I personally run the bot as a cronjob on my home server. My job config is set to run at 30 minute intervals and looks something like this:
 
-`*/30 * * * * python3 run.py`
+`*/30 * * * * python3 konakona.py`
 
 
 **Finally**, set up the configuration file.
 
 #### Configuration
-In the same directory as the run.py script is a configuration file, **settings.cfg**. You will need to modify this file in order for the bot to function.
+In the same directory as the konakona.py script is a configuration file, **settings.cfg**. You will need to modify this file in order for the bot to function.
 ##### Config Variables
 The settings.cfg file contains a JSON-like structure of variables. Of these variables, please note:
 
