@@ -42,7 +42,9 @@ The settings.cfg file contains a JSON-like structure of variables. Of these vari
 
 *save* - Located in the 'general' tree. Boolean. Choose whether images/clips should be saved or not. Output files get renamed and moved to the media folder. The format of the filename is %Y%m%d-%H%M%S(year,month,day-hour,minute,second).
 
-*multi.img_num* - Located in the 'general.multi' tree. Integer. Goes up to 4 and turns off at 0. Generates multiple images that get posted as one tweet. Not working with videos.
+*multi.chance* - Located in the 'general.multi' tree. Integer. A number between 0 and 1, representing the percentage of the time the bot will produce multiple images. Set to 0 to never produce multiple images. Set to 1 to produce multiple images every time.
+
+*multi.img_num* - Located in the 'general.multi' tree. Integer. Goes up to 4 images. Generates multiple images that get posted as one tweet. Not working with videos.
 
 *multi.sec_apart* - Located in the 'general.multi' tree. Integer. Chooses how many seconds apart the multiple generated images should be.
 

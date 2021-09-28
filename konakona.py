@@ -19,6 +19,7 @@ except config.ConfigFormatError:
 # settings
 directory = cfg['general.directory']
 save = cfg['general.save']
+multi_chance = cfg['general.multi.chance']
 img_num = cfg['general.multi.img_num']
 sec_apart = cfg['general.multi.sec_apart']
 image_directory = cfg['general.image.directory']
@@ -129,7 +130,8 @@ def check_video():
 
 # checks if we should generate multiple screenshots
 def check_multi():
-    if img_num > 0:
+    r = random.random()
+    if r <= multi_chance:
         return True
     else:
         return False
