@@ -7,7 +7,6 @@ import subprocess
 import config
 import twitter
 
-
 # config
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,6 +19,8 @@ except config.ConfigFormatError:
 # settings
 directory = cfg['general.directory']
 save = cfg['general.save']
+img_num = cfg['general.multi.img_num']
+sec_apart = cfg['general.multi.sec_apart']
 image_directory = cfg['general.image.directory']
 video_directory = cfg['general.video.directory']
 clip_length = cfg['general.video.length']
@@ -46,7 +47,7 @@ def get_random_video_filepath(directory):
     direc = directory
     while os.path.isdir(direc):
         outdir += random.choice(os.listdir(direc))
-        if outdir.endswith(('mkv', 'mp4', 'avi')):
+        if outdir.endswith(('mkv', 'mp4', 'avi', 'webm')):
             break
         else:
             outdir += '/'
@@ -55,8 +56,7 @@ def get_random_video_filepath(directory):
 
 
 # use ffmpeg to generate screenshot at timestamp
-def generate_random_screenshot_locally(filepath):
-    random_time = random.uniform(0.00, get_length(filepath))
+def generate_random_screenshot_locally(filepath, random_time):
     command_img = [
         'ffmpeg', '-y',
         '-ss', str(random_time),
@@ -71,7 +71,7 @@ def generate_random_screenshot_locally(filepath):
     return tmpfile_img
 
 
-# use ffmpeg to generate 5 sec clip at timestamp
+# use ffmpeg to generate clip at timestamp
 def generate_random_clip_locally(filepath):
     random_time = random.uniform(0.00, get_length(filepath) - float(clip_length))
     command_vid = [
@@ -93,7 +93,7 @@ def generate_random_clip_locally(filepath):
     return tmpfile_vid
 
 
-# use ffprobe to get the length of the mkv
+# use ffprobe to get the length of the video
 def get_length(filepath):
     command_info = [
         'ffprobe',
@@ -127,10 +127,20 @@ def check_video():
         return False
 
 
-if __name__ == '__main__':
+# checks if we should generate multiple screenshots
+def check_multi():
+    if img_num > 0:
+        return True
+    else:
+        return False
 
+
+if __name__ == '__main__':
     # determine if we should generate a video or screenshot
     should_generate_video = check_video()
+
+    # determine if multiple images should generate
+    should_generate_multi = check_multi()
 
     # if we are generating a video, set our working directory to the video directory if one exists.
     if should_generate_video and video_directory:
@@ -152,17 +162,37 @@ if __name__ == '__main__':
             output = generate_random_clip_locally(filepath)
         elif image_directory:
             output = filepath
+        elif should_generate_multi:
+            if img_num > 4:
+                print('Error: Too many images')
+            output_list = []
+            random_time = random.uniform(0.00, get_length(filepath))
+            tmpfile_img_name, extension = os.path.splitext(tmpfile_img)
+            for i in range(img_num):
+                counter = i
+                tmpfile_img = tmpfile_img_name + str(counter) + extension
+                output_list.append(generate_random_screenshot_locally(filepath, random_time))
+                random_time += sec_apart
         else:
-            output = generate_random_screenshot_locally(filepath)
+            random_time = random.uniform(0.00, get_length(filepath))
+            output = generate_random_screenshot_locally(filepath, random_time)
     except subprocess.CalledProcessError:
         print('Error: Invalid file path')
         exit()
 
     # post to twitter
-    post_update(output)
+    if should_generate_multi and not should_generate_video:
+        post_update(output_list)
+    else:
+        post_update(output)
 
     # save the image/video clip
     if should_generate_video and save:
         shutil.move(output, tmpfile_vid_alt)
+    elif should_generate_multi and save:
+        for output in output_list:
+            now = datetime.datetime.now()
+            tmpfile_img_alt = os.path.join(script_dir, cfg['etc.tmpfile_alt.img'], now.strftime('%Y%m%d-%H%M%S%f.jpg'))
+            shutil.move(output, tmpfile_img_alt)
     elif save:
         shutil.move(output, tmpfile_img_alt)
