@@ -2,7 +2,7 @@
 Konakona is a generic twitter screenshot / video posting bot written in Python. This project was originally developed for [@LuckyStarPicBot](https://twitter.com/LuckyStarPicBot).
 
 ### What is this?
-This bot was written in order to generate a constant stream of content for a twitter bot that avoids the overhead of manual uploads or pre-clipping images and video files.
+This bot was written in order to generate a constant stream of content for a Twitter bot that avoids the overhead of manual uploads or pre-clipping images and video files.
 
 It works by first parsing through a directory and selecting a video. It then uses ffmpeg to generate a screenshot at a random time from that video, then uploads it to twitter.
 
@@ -42,16 +42,20 @@ The settings.cfg file contains a JSON-like structure of variables. Of these vari
 
 *save* - Located in the 'general' tree. Boolean. Choose whether images/clips should be saved or not. Output files get renamed and moved to the media folder. The format of the filename is %Y%m%d-%H%M%S(year,month,day-hour,minute,second).
 
+*multi.img_num* - Located in the 'general.multi' tree. Integer. Goes up to 4 and turns off at 0. Generates multiple images that get posted as one tweet. Not working with videos.
+
+*multi.sec_apart* - Located in the 'general.multi' tree. Integer. Chooses how many seconds apart the multiple generated images should be.
+
 *image.directory* - Located in the 'general.image' tree. An alternate image tree. It works like the base tree, but, if filled out, will be the source folder for all videos. Useful for pre-generated images, for instance.
 
 *video.directory* - Located in the 'general.video' tree. An alternate video tree. It works like the base tree, but, if filled out, will be the source folder for all videos. Useful for guaranteeing that videos have subtitles, for instance.
 
-*length* - Located in the 'general.video' tree. Integer. This is what the length of an outputted video clip will be, in seconds.
+*video.length* - Located in the 'general.video' tree. Integer. This is what the length of an outputted video clip will be, in seconds.
 
-*chance* - Located in the 'general.video' tree. A number between 0 and 1, representing the percentage of the time the bot will produce a video instead of producing a screenshot. Set to 0 to never produce a video. Set to 1 to produce a video every time.
+*video.chance* - Located in the 'general.video' tree. A number between 0 and 1, representing the percentage of the time the bot will produce a video instead of producing a screenshot. Set to 0 to never produce a video. Set to 1 to produce a video every time.
 
 ##### API Keys
-There are also API keys that you must fill out. You will need to sign up for a twitter developer account in order to gain access to these. For more info, see Twitter's website. https://developer.twitter.com/en/docs/twitter-api/getting-started/getting-access-to-the-twitter-api
+There are also API keys that you must fill out. You will need to sign up for a Twitter developer account in order to gain access to these. For more info, see Twitter's website. https://developer.twitter.com/en/docs/twitter-api/getting-started/getting-access-to-the-twitter-api
 
 These keys & secrets should be placed in the corresponding variables in the 'keys.consumer' and 'keys.access' trees.
 
