@@ -10,7 +10,7 @@ The bot also has the ability to parse through multiple directories, so you can g
 
 Take note that if you have a directory in the same hierarchical level as video files, it is significantly more likely that you will pull from the videos rather than parse the directory, since the bot stops parsing once it finds a video.
 
-![Explanation](/doc/help_diagram.png)
+![Explanation](/konakona/data/help_diagram.png)
 
 Additionally, rather than a screenshot, the bot can also generate videos from the source material.
 

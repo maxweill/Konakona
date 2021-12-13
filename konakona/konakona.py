@@ -41,7 +41,7 @@ tmpfile_img_alt = os.path.join(script_dir, cfg['etc.tmpfile_alt.img'], now.strft
 tmpfile_vid_alt = os.path.join(script_dir, cfg['etc.tmpfile_alt.vid'], now.strftime('%Y%m%d-%H%M%S.mp4'))
 
 
-# randomly select an mkv video from input directory
+# randomly select a mkv video from input directory
 # look at help diagram to understand which use cases are supported
 def get_random_video_filepath(directory):
     outdir = ''
