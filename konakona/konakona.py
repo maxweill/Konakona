@@ -96,9 +96,12 @@ def generate_random_clip_locally(filepath):
 
 
 # using normal image generation multiple times
-def generate_multi_screenshots_locally(filepath, tmpfile_img):
+def generate_multi_screenshots_locally(filepath, tmpfile_img, img_num):
     if img_num > 4:
         print('Error: Too many images')
+        exit()
+    elif img_num == 0:
+        img_num = random.randint(2, 4)
     image_list = []
     random_time = random.uniform(0.00, get_length(filepath))
     tmpfile_img_name, extension = os.path.splitext(tmpfile_img)
@@ -181,7 +184,7 @@ if __name__ == '__main__':
         elif image_directory:
             output = filepath
         elif should_generate_multi:
-            output_list = generate_multi_screenshots_locally(filepath, tmpfile_img)
+            output_list = generate_multi_screenshots_locally(filepath, tmpfile_img, img_num)
         else:
             random_time = random.uniform(0.00, get_length(filepath))
             output = generate_random_screenshot_locally(filepath, random_time, tmpfile_img)
