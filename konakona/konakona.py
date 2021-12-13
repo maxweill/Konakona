@@ -7,6 +7,7 @@ import subprocess
 import config
 import twitter
 
+
 # config
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -57,7 +58,7 @@ def get_random_video_filepath(directory):
 
 
 # use ffmpeg to generate screenshot at timestamp
-def generate_random_screenshot_locally(filepath, random_time):
+def generate_random_screenshot_locally(filepath, random_time, tmpfile_img):
     command_img = [
         'ffmpeg', '-y',
         '-ss', str(random_time),
@@ -92,6 +93,21 @@ def generate_random_clip_locally(filepath):
     ]
     subprocess.call(command_vid)
     return tmpfile_vid
+
+
+# using normal image generation multiple times
+def generate_multi_screenshots_locally(filepath, tmpfile_img):
+    if img_num > 4:
+        print('Error: Too many images')
+    image_list = []
+    random_time = random.uniform(0.00, get_length(filepath))
+    tmpfile_img_name, extension = os.path.splitext(tmpfile_img)
+    for i in range(img_num):
+        counter = i
+        tmpfile_img = tmpfile_img_name + str(counter) + extension
+        image_list.append(generate_random_screenshot_locally(filepath, random_time, tmpfile_img))
+        random_time += sec_apart
+    return image_list
 
 
 # use ffprobe to get the length of the video
@@ -165,19 +181,10 @@ if __name__ == '__main__':
         elif image_directory:
             output = filepath
         elif should_generate_multi:
-            if img_num > 4:
-                print('Error: Too many images')
-            output_list = []
-            random_time = random.uniform(0.00, get_length(filepath))
-            tmpfile_img_name, extension = os.path.splitext(tmpfile_img)
-            for i in range(img_num):
-                counter = i
-                tmpfile_img = tmpfile_img_name + str(counter) + extension
-                output_list.append(generate_random_screenshot_locally(filepath, random_time))
-                random_time += sec_apart
+            output_list = generate_multi_screenshots_locally(filepath, tmpfile_img)
         else:
             random_time = random.uniform(0.00, get_length(filepath))
-            output = generate_random_screenshot_locally(filepath, random_time)
+            output = generate_random_screenshot_locally(filepath, random_time, tmpfile_img)
     except subprocess.CalledProcessError:
         print('Error: Invalid file path')
         exit()
