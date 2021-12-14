@@ -100,8 +100,11 @@ def generate_multi_screenshots_locally(filepath, tmpfile_img, img_num):
     if img_num > 4:
         print('Error: Too many images')
         exit()
-    elif img_num == 0:
+    elif img_num == 1:
         img_num = random.randint(2, 4)
+    elif img_num < 1:
+        print('Error: You really sure about that ?')
+        exit()
     image_list = []
     random_time = random.uniform(0.00, get_length(filepath))
     tmpfile_img_name, extension = os.path.splitext(tmpfile_img)
