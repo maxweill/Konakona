@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QComboBox,
     QCheckBox,
+    QGroupBox,
     QLayout,
     QVBoxLayout,
     QHBoxLayout,
@@ -124,6 +125,52 @@ class MainWindow(QMainWindow):
         layout4.addWidget(self.save_checkbox)
         layout4.setAlignment(Qt.AlignHCenter)
 
+        # Keys lineEdit
+        self.consumer_key = QLineEdit()
+        self.consumer_key.setMaxLength(255)
+        self.consumer_key.setPlaceholderText('Enter Consumer Key')
+        self.consumer_key.setEchoMode(QLineEdit.Password)
+
+        self.consumer_secret = QLineEdit()
+        self.consumer_secret.setMaxLength(255)
+        self.consumer_secret.setPlaceholderText('Enter Consumer Secret')
+        self.consumer_secret.setEchoMode(QLineEdit.Password)
+
+        self.access_key = QLineEdit()
+        self.access_key.setMaxLength(255)
+        self.access_key.setPlaceholderText('Enter Access Key')
+        self.access_key.setEchoMode(QLineEdit.Password)
+
+        self.access_secret = QLineEdit()
+        self.access_secret.setMaxLength(255)
+        self.access_secret.setPlaceholderText('Enter Access Secret')
+        self.access_secret.setEchoMode(QLineEdit.Password)
+
+        # Etc. comboBox and label
+        self.outfile_img_label = QLabel('Choose image output format:')
+        font4 = self.outfile_img_label.font()
+        font4.setPointSize(10)
+
+        self.outfile_img = QComboBox()
+        self.outfile_img.addItems(['jpg', 'png'])
+
+        layout5 = QHBoxLayout()
+        layout5.addWidget(self.outfile_img_label)
+        layout5.addWidget(self.outfile_img)
+
+        self.outfile_vid_label = QLabel('Choose video output format:')
+        font4 = self.outfile_vid_label.font()
+        font4.setPointSize(10)
+
+        self.outfile_vid = QComboBox()
+        self.outfile_vid.addItems(['mp4', 'mkv', 'avi'])
+
+        layout6 = QHBoxLayout()
+        layout6.addWidget(self.outfile_vid_label)
+        layout6.addWidget(self.outfile_vid)
+
+        self.apply_button = QPushButton('Apply')
+
         # ------ When something is done connects the functions ------
         self.timer_slider.valueChanged.connect(self.timer_slider_value)
         self.search_button.clicked.connect(self.search_button_clicked)
@@ -133,27 +180,52 @@ class MainWindow(QMainWindow):
         self.video_slider.valueChanged.connect(self.video_slider_value)
         self.save_checkbox.stateChanged.connect(self.save_checkbox_state)
 
-        # -------- Laying out window structure (real layout) --------
+        # -------- Laying out window structure --------
         layout = QVBoxLayout()
         layout.addWidget(self.konakona_label)
 
-        layout.addLayout(layout2)
+        groupbox1 = QGroupBox('General')
+        groupbox2 = QGroupBox('Keys')
+        groupbox3 = QGroupBox('Etc.')
+        layout.addWidget(groupbox1)
+        layout.addWidget(groupbox2)
+        layout.addWidget(groupbox3)
 
-        layout.addWidget(self.timer_label)
-        layout.addWidget(self.timer_slider)
-        layout.addWidget(self.timer_value)
+        layout.addWidget(self.apply_button)
 
-        layout.addWidget(self.multi_label)
-        layout.addWidget(self.multi_slider)
-        layout.addWidget(self.multi_value)
+        vbox1 = QVBoxLayout()
+        vbox2 = QVBoxLayout()
+        vbox3 = QVBoxLayout()
+        groupbox1.setLayout(vbox1)
+        groupbox2.setLayout(vbox2)
+        groupbox3.setLayout(vbox3)
 
-        layout.addLayout(layout3)
+        # Real layout
+        vbox1.addLayout(layout2)
 
-        layout.addWidget(self.video_label)
-        layout.addWidget(self.video_slider)
-        layout.addWidget(self.video_value)
+        vbox1.addWidget(self.timer_label)
+        vbox1.addWidget(self.timer_slider)
+        vbox1.addWidget(self.timer_value)
 
-        layout.addLayout(layout4)
+        vbox1.addWidget(self.multi_label)
+        vbox1.addWidget(self.multi_slider)
+        vbox1.addWidget(self.multi_value)
+
+        vbox1.addLayout(layout3)
+
+        vbox1.addWidget(self.video_label)
+        vbox1.addWidget(self.video_slider)
+        vbox1.addWidget(self.video_value)
+
+        vbox1.addLayout(layout4)
+
+        vbox2.addWidget(self.consumer_key)
+        vbox2.addWidget(self.consumer_secret)
+        vbox2.addWidget(self.access_key)
+        vbox2.addWidget(self.access_secret)
+
+        vbox3.addLayout(layout5)
+        vbox3.addLayout(layout6)
 
         # --------- Qt stuff that needs to be here ---------
         container = QWidget()
