@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QCheckBox,
     QGroupBox,
+    QFileDialog,
     QLayout,
     QVBoxLayout,
     QHBoxLayout,
@@ -38,7 +39,7 @@ class MainWindow(QMainWindow):
         self.video_path.setMaxLength(255)
         self.video_path.setPlaceholderText('Enter Video Filepath')
 
-        self.search_button = QPushButton('S')
+        self.search_button = QPushButton('...')
         self.search_button.setMaximumSize(20, 40)
 
         layout2 = QHBoxLayout()
@@ -169,9 +170,35 @@ class MainWindow(QMainWindow):
         layout6.addWidget(self.outfile_vid_label)
         layout6.addWidget(self.outfile_vid)
 
+        # LineEdit for alternative image path + button
+        self.alt_image_path = QLineEdit()
+        self.alt_image_path.setMaxLength(255)
+        self.alt_image_path.setPlaceholderText('Enter alternative Image path')
+
+        self.alt_image_button = QPushButton('...')
+        self.alt_image_button.setMaximumSize(20, 40)
+
+        layout7 = QHBoxLayout()
+        layout7.addWidget(self.alt_image_path)
+        layout7.addWidget(self.alt_image_button)
+
+        # LineEdit for alternative video path + button
+        self.alt_video_path = QLineEdit()
+        self.alt_video_path.setMaxLength(255)
+        self.alt_video_path.setPlaceholderText('Enter alternative Video path')
+
+        self.alt_video_button = QPushButton('...')
+        self.alt_video_button.setMaximumSize(20, 40)
+
+        layout8 = QHBoxLayout()
+        layout8.addWidget(self.alt_video_path)
+        layout8.addWidget(self.alt_video_button)
+
         self.apply_button = QPushButton('Apply')
 
         # ------ When something is done connects the functions ------
+        # General
+        self.video_path.textChanged.connect(self.video_path_get_text)
         self.timer_slider.valueChanged.connect(self.timer_slider_value)
         self.search_button.clicked.connect(self.search_button_clicked)
         self.multi_slider.valueChanged.connect(self.multi_slider_value)
@@ -179,13 +206,16 @@ class MainWindow(QMainWindow):
         self.multi_box.currentTextChanged.connect(self.multi_box_str)
         self.video_slider.valueChanged.connect(self.video_slider_value)
         self.save_checkbox.stateChanged.connect(self.save_checkbox_state)
+        # Etc.
+        self.alt_image_button.clicked.connect(self.alt_image_button_clicked)
+        self.alt_video_button.clicked.connect(self.alt_video_button_clicked)
 
         # -------- Laying out window structure --------
         layout = QVBoxLayout()
         layout.addWidget(self.konakona_label)
 
-        groupbox1 = QGroupBox('General')
-        groupbox2 = QGroupBox('Keys')
+        groupbox1 = QGroupBox('General Settings')
+        groupbox2 = QGroupBox('API-Keys')
         groupbox3 = QGroupBox('Etc.')
         layout.addWidget(groupbox1)
         layout.addWidget(groupbox2)
@@ -203,9 +233,9 @@ class MainWindow(QMainWindow):
         # Real layout
         vbox1.addLayout(layout2)
 
-        vbox1.addWidget(self.timer_label)
-        vbox1.addWidget(self.timer_slider)
-        vbox1.addWidget(self.timer_value)
+        # vbox1.addWidget(self.timer_label)
+        # vbox1.addWidget(self.timer_slider)
+        # vbox1.addWidget(self.timer_value)
 
         vbox1.addWidget(self.multi_label)
         vbox1.addWidget(self.multi_slider)
@@ -227,6 +257,9 @@ class MainWindow(QMainWindow):
         vbox3.addLayout(layout5)
         vbox3.addLayout(layout6)
 
+        vbox3.addLayout(layout7)
+        vbox3.addLayout(layout8)
+
         # --------- Qt stuff that needs to be here ---------
         container = QWidget()
         container.setLayout(layout)
@@ -234,8 +267,13 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
 
     # ---------------- A bunch of functions ----------------
+    def video_path_get_text(self, s):
+        print('Filepath: {}'.format(s))
+
     def search_button_clicked(self):
-        print('clicked')
+        directory = str(QFileDialog.getExistingDirectory(self, 'Select Video Folder'))
+        self.video_path.setText(directory + '/')
+        print('Search button clicked')
 
     def timer_slider_value(self, i):
         self.timer_value.setText('slider value: {}'.format(i))
@@ -257,6 +295,16 @@ class MainWindow(QMainWindow):
 
     def save_checkbox_state(self, s):
         print('Save-Checkbox: {}'.format(s == Qt.Checked))
+
+    def alt_image_button_clicked(self):
+        directory = str(QFileDialog.getExistingDirectory(self, 'Select Alternative Image Folder'))
+        self.alt_image_path.setText(directory + '/')
+        print('Alt-image button clicked')
+
+    def alt_video_button_clicked(self):
+        directory = str(QFileDialog.getExistingDirectory(self, 'Select Alternative Video Folder'))
+        self.alt_video_path.setText(directory + '/')
+        print('Alt-video button clicked')
 
 
 if __name__ == '__main__':
