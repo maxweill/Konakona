@@ -1,0 +1,25 @@
+twitter:
+    consumerKey:    ''
+    consumerSecret: ''
+    token:          ''
+    tokenSecret:    ''
+
+directory:          ''
+fileEnding:         '.mp4'
+
+save:               yes
+saveDirectory:
+    images:         ''
+    clips:          ''
+
+screenshot:
+    imageCount:     4
+    secondsApart:   2
+
+clip:
+    clipCount:      5
+    secondsApart:   0
+    clipLength:     5
+
+chance:
+    clip:           1
