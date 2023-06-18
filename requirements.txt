@@ -1,2 +1,1 @@
-python-twitter~=3.5
-config~=0.5.1
+PyYAML~=6.0
