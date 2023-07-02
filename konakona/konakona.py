@@ -1,8 +1,10 @@
 import os
+import base64
 import random
 import subprocess
 
 import yaml
+import pytwitter
 
 
 def load_config():
@@ -126,10 +128,32 @@ def check_generate(chance_clip):
 
 
 def save_files(operation):
+    """
+    this function will be added later on
+    """
     if operation:
-        print('clip')
+        print('\nclip')
     if not operation:
-        print('image')
+        print('\nimage')
+
+
+def post_update(upload):
+    with open(upload, "rb") as image_file:
+        data = {"media_data": base64.b64encode(image_file.read())}
+
+    api = pytwitter.Api(consumer_key=config['consumer_key'],
+                        consumer_secret=config['consumer_secret'],
+                        access_token=config['token'],
+                        access_secret=config['token_secret'])
+
+    url = "https://upload.twitter.com/1.1/media/upload.json?media_category=tweet_image"
+
+    response = api._request(url, verb="POST", data=data)
+    media_id = response.json()["media_id"]
+    result = api.create_tweet(
+        text="", media_media_ids=[str(media_id)], media_tagged_user_ids=[])
+
+    print(result)
 
 
 if __name__ == '__main__':
@@ -139,10 +163,12 @@ if __name__ == '__main__':
     duration = get_file_length(filepath)
 
     if check_generate(config['chance_clip']):
-        clips = generate_clip_local(filepath, duration, config['clip_count'],config['clip_seconds_apart'],
-                                    config['clip_length'])
+        output = generate_clip_local(filepath, duration, config['clip_count'], config['clip_seconds_apart'],
+                                     config['clip_length'])
     else:
-        images = generate_screenshot_local(filepath, duration, config['image_count'], config['image_seconds_apart'])
+        output = generate_screenshot_local(filepath, duration, config['image_count'], config['image_seconds_apart'])
 
     if config['save']:
         save_files(check_generate(config['chance_clip']))
+
+    post_update(output)
