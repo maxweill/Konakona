@@ -1,6 +1,7 @@
 import os
-import base64
 import random
+import shutil
+import datetime
 import subprocess
 
 import yaml
@@ -166,11 +167,15 @@ def post_update(upload):
     print(update)
 
 
-def save_files(operation):
-    if operation:
-        print('\nclip')
-    if not operation:
-        print('\nimage')
+def save_files(clip, output):
+    if clip:
+        for item in output:
+            now = datetime.datetime.now()
+            shutil.move(item, config['save_clips'] + now.strftime('%Y-%m-%d %H:%M:%S:%f') + item)
+    elif not clip:
+        for item in output:
+            now = datetime.datetime.now()
+            shutil.move(item, config['save_images'] + now.strftime('%Y-%m-%d %H:%M:%S:%f') + item)
 
 
 if __name__ == '__main__':
@@ -188,4 +193,4 @@ if __name__ == '__main__':
     post_update(output)
 
     if config['save']:
-        save_files(check_generate(config['chance_clip']))
+        save_files(check_generate(config['chance_clip']), output)
