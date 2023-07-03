@@ -4,7 +4,7 @@ import random
 import subprocess
 
 import yaml
-import pytwitter
+import tweepy
 
 
 def load_config():
@@ -18,6 +18,7 @@ def load_config():
         'consumer_secret': data['twitter']['consumerSecret'],
         'token': data['twitter']['token'],
         'token_secret': data['twitter']['tokenSecret'],
+        'bearer': data['twitter']['bearer'],
 
         'directory': data['directory'],
         'file_ending': data['fileEnding'],
@@ -138,22 +139,23 @@ def save_files(operation):
 
 
 def post_update(upload):
-    with open(upload, "rb") as image_file:
-        data = {"media_data": base64.b64encode(image_file.read())}
+    """
+    upload via the 1.1 API with tweepy
+    """
+    auth = tweepy.OAuth1UserHandler(
+        config['consumer_key'],
+        config['consumer_secret'],
+        config['token'],
+        config['token_secret']
+    )
+    api = tweepy.API(auth)
 
-    api = pytwitter.Api(consumer_key=config['consumer_key'],
-                        consumer_secret=config['consumer_secret'],
-                        access_token=config['token'],
-                        access_secret=config['token_secret'])
+    response = api.media_upload(upload[0])
+    media_id = response.media_id
+    print(response, '\n', media_id)
 
-    url = "https://upload.twitter.com/1.1/media/upload.json?media_category=tweet_image"
-
-    response = api._request(url, verb="POST", data=data)
-    media_id = response.json()["media_id"]
-    result = api.create_tweet(
-        text="", media_media_ids=[str(media_id)], media_tagged_user_ids=[])
-
-    print(result)
+    update = api.update_status(media_id)
+    print(update)
 
 
 if __name__ == '__main__':

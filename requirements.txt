@@ -1,2 +1,2 @@
 PyYAML~=6.0
-python-twitter-v2~=0.8.1
+tweepy~=4.14.0
