@@ -69,7 +69,11 @@ def generate_screenshot_local(filepath, duration, image_count, seconds_apart):
         image_count = random.randint(1, 4)
 
     random_time = random.uniform(0.00, duration - seconds_apart * image_count)
-    output_name_list = ('out_0.png', 'out_1.png', 'out_2.png', 'out_3.png')
+
+    output_name_list = []
+    for i in range(image_count):
+        output_name = f"out_{i}.png"
+        output_name_list.append(output_name)
 
     for i in range(image_count):
         script = [
@@ -95,7 +99,11 @@ def generate_clip_local(filepath, duration, clip_count, seconds_apart, clip_leng
 
     calc = seconds_apart * clip_count + float(clip_length) * clip_count
     random_time = random.uniform(0.00, duration - calc)
-    output_video_list = ('out_0.mp4', 'out_1.mp4', 'out_2.mp4', 'out_3.mp4')
+
+    output_video_list = []
+    for i in range(clip_count):
+        output_name = f"out_{i}.mp4"
+        output_video_list.append(output_name)
 
     for i in range(clip_count):
         script = [
@@ -128,19 +136,10 @@ def check_generate(chance_clip):
         return False
 
 
-def save_files(operation):
-    """
-    this function will be added later on
-    """
-    if operation:
-        print('\nclip')
-    if not operation:
-        print('\nimage')
-
-
 def post_update(upload):
     """
-    upload via the 1.1 API with tweepy
+    upload with the v1.1 API and post with the v2 API
+    I hate twitter
     """
     auth = tweepy.OAuth1UserHandler(
         config['consumer_key'],
@@ -150,12 +149,28 @@ def post_update(upload):
     )
     api = tweepy.API(auth)
 
-    response = api.media_upload(upload[0])
-    media_id = response.media_id
-    print(response, '\n', media_id)
+    media_ids = []
+    for item in upload:
+        response = api.media_upload(item)
+        media_id = response.media_id_string
+        media_ids.append(media_id)
 
-    update = api.update_status(media_id)
+    client = tweepy.Client(
+        consumer_key=config['consumer_key'],
+        consumer_secret=config['consumer_secret'],
+        access_token=config['token'],
+        access_token_secret=config['token_secret']
+    )
+
+    update = client.create_tweet(text="", media_ids=media_ids, media_tagged_user_ids=[])
     print(update)
+
+
+def save_files(operation):
+    if operation:
+        print('\nclip')
+    if not operation:
+        print('\nimage')
 
 
 if __name__ == '__main__':
@@ -170,7 +185,7 @@ if __name__ == '__main__':
     else:
         output = generate_screenshot_local(filepath, duration, config['image_count'], config['image_seconds_apart'])
 
+    post_update(output)
+
     if config['save']:
         save_files(check_generate(config['chance_clip']))
-
-    post_update(output)
