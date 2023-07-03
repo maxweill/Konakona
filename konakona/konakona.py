@@ -168,14 +168,11 @@ def post_update(upload):
 
 
 def save_files(clip, output):
-    if clip:
-        for item in output:
-            now = datetime.datetime.now()
-            shutil.move(item, config['save_clips'] + now.strftime('%Y-%m-%d %H:%M:%S:%f') + item)
-    elif not clip:
-        for item in output:
-            now = datetime.datetime.now()
-            shutil.move(item, config['save_images'] + now.strftime('%Y-%m-%d %H:%M:%S:%f') + item)
+    output_path = config['save_clips'] if clip else config['save_images']
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S:%f')
+
+    for item in output:
+        shutil.move(item, output_path + timestamp + item)
 
 
 if __name__ == '__main__':
