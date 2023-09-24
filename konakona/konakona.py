@@ -19,7 +19,6 @@ def load_config():
         'consumer_secret': data['twitter']['consumerSecret'],
         'token': data['twitter']['token'],
         'token_secret': data['twitter']['tokenSecret'],
-        'bearer': data['twitter']['bearer'],
 
         'directory': data['directory'],
         'file_ending': data['fileEnding'],
