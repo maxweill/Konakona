@@ -11,7 +11,7 @@ import tweepy
 def load_config():
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    with open(os.path.join(script_dir, 'testConfig.yaml'), 'r') as stream:
+    with open(os.path.join(script_dir, 'config.yaml'), 'r') as stream:
         data = yaml.safe_load(stream)
 
     settings = {
@@ -219,7 +219,7 @@ if __name__ == '__main__':
     else:
         output = generate_screenshot_local(filepath, duration, config['image_count'], config['image_seconds_apart'],useSubtitles)
 
-    #post_update(output)
+    post_update(output)
 
     if config['save']:
         save_files(check_generate(config['chance_clip']), output)
