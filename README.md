@@ -10,13 +10,10 @@ The bot also has the ability to parse through multiple directories, so you can g
 
 Take note that if you have a directory in the same hierarchical level as video files, it is significantly more likely that you will pull from the videos rather than parse the directory, since the bot stops parsing once it finds a video.
 
-![Explanation](/konakona/data/help_diagram.png)
-
 Additionally, rather than a screenshot, the bot can also generate videos from the source material.
 
 Currently, the bot is capable of finding and parsing MKV, MP4, and AVI video files. 
 
-Other file types can be manually added in the function **get_random_video_filepath** at your own risk.
 
 ### How To Use
 
