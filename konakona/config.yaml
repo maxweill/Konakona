@@ -5,6 +5,7 @@ twitter:
     tokenSecret:    ''
 
 directory:          ''
+altVidDirectory:	''
 fileEnding:         '.mp4'
 
 save:               yes
@@ -20,6 +21,8 @@ clip:
     clipCount:      5
     secondsApart:   0
     clipLength:     5
+    useSubtitleTrack:   0
 
 chance:
     clip:           1
+    subtitleChance: 1
