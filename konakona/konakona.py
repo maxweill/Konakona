@@ -208,12 +208,14 @@ if __name__ == '__main__':
 
     generateClip=check_generate(config['chance_clip'])
     directory = config['video_directory'] if generateClip else config['directory']
+    if not directory: 
+        directory=config['directory']
     filepath = get_random_filepath(directory, config['file_ending'])
     duration = get_file_length(filepath)
     useSubtitles = check_generate(config['chance_sub'])
 
     if generateClip:
-        if config['clip_subtitles']: useSubtitles=true 
+        if config['clip_subtitles']: useSubtitles=True 
         output = generate_clip_local(filepath, duration, config['clip_count'], config['clip_seconds_apart'],
                                      config['clip_length'],useSubtitles)
     else:

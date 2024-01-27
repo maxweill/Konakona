@@ -21,7 +21,7 @@ clip:
     clipCount:      5
     secondsApart:   0
     clipLength:     5
-    useSubtitleTrack:   0
+    forceSubTrack:   0
 
 chance:
     clip:           1

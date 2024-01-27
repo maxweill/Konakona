@@ -40,47 +40,32 @@ I personally run the bot as a cronjob on my home server. My job config is set to
 **Finally**, set up the configuration file.
 
 #### Configuration
-In the same directory as the konakona.py script is a configuration file, **settings.cfg**. You will need to modify this file in order for the bot to function.
+In the same directory as the konakona.py script is a configuration file, **config.yaml**. You will need to modify this file in order for the bot to function.
 ##### Config Variables
-The settings.cfg file contains a JSON-like structure of variables. Of these variables, please note:
+The settings.cfg file contains a number of variables.
 
 | 'general' tree  | data-type | description                                                  |
 | --------------- | --------- | ------------------------------------------------------------ |
-| directory       | String    | The path to your videos, or your folder of (folders of...) videos. **Should end with a '/'.** |
-| save            | Boolean   | Choose whether images/clips should be saved or not. Output files get renamed and moved to the media folder. The format of the filename is %Y%m%d-%H%M%S(year,month,day-hour,minute,second). |
-| image.directory | String    | An alternate image tree. It works like the base tree, but, if filled out, will be the source folder for all videos. Useful for pre-generated images, for instance. **Leave empty if not used.** |
-| multi.chance    | Integer   | A number between 0 and 1, representing the percentage of the time the bot will produce multiple images. Set to 0 to never produce multiple images. Set to 1 to produce multiple images every time. |
-| multi.img_num   | Integer   | Goes from 2 to 4 images. Insert 1 for random number. Generates multiple images that get posted as one tweet. Not working with videos. |
-| multi.sec_apart | Integer   | Chooses how many seconds apart the multiple generated images should be. |
-| video.chance    | Integer   | A number between 0 and 1, representing the percentage of the time the bot will produce a video instead of producing a screenshot. Set to 0 to never produce a video. Set to 1 to produce a video every time. |
-| video.length    | Integer   | This is what the length of an outputted video clip will be, in seconds. |
-| video.directory | String    | An alternate video tree. It works like the base tree, but, if filled out, will be the source folder for all videos. Useful for guaranteeing that videos have subtitles, for instance.  **Leave empty if not used.** |
-
-##### API Keys
-There are also API keys that you must fill out. You will need to sign up for a Twitter developer account in order to gain access to these. For more info, see Twitter's website. https://developer.twitter.com/en/docs/twitter-api/getting-started/getting-access-to-the-twitter-api
-
-These keys & secrets should be placed in the corresponding variables in the 'keys.consumer' and 'keys.access' trees.
-
-| 'keys' tree     | data-type | description |
-| --------------- | --------- | ----------- |
-| consumer.key    | String    |             |
-| consumer.secret | String    |             |
-| access.key      | String    |             |
-| access.secret   | String    |             |
-
-##### Etc.
-
-Here you can change the output file of the image, video clip and the place where saved images should go. It is not recommended to change anything unless you know what you are doing.
-
-| 'etc' tree      | data-type | description                                                  |
-| --------------- | --------- | ------------------------------------------------------------ |
-| tmpfile.img     | String    | The normal output file is 'out.jpg', but you could change the extension to 'out.png'. |
-| tmpfile.vid     | String    | The normal output file is 'out.mp4', but you could change it to 'out.mkv' or 'out.avi'. There is no guarantee that the bot will work with those file perfectly. 'out.gif' and 'out.webm' are currently not working. |
-| tmpfile_alt.img | String    | Path where your images are getting stored. Currently inside the konakona folder. Should end with a '/'. |
-| tmpfile_alt.vid | String    | Path where your video clips are getting stored. Currently inside the konakona folder. Should end with a '/'. |
+| twitter.consumerKey       | string | See [twitter docs](https://developer.twitter.com/en/docs/authentication/oauth-1-0a) for more information. |
+| twitter.consumerSecret      | string | See [twitter docs](https://developer.twitter.com/en/docs/authentication/oauth-1-0a) for more information. |
+| twitter.token       | string |S ee [twitter docs](https://developer.twitter.com/en/docs/authentication/oauth-1-0a) for more information. |
+| twitter.tokenSecret      | string | See [twitter docs](https://developer.twitter.com/en/docs/authentication/oauth-1-0a) for more information. |
+| directory       | string | The main directory to pull your source video files from. |
+| altVidDirectory       | string | An alternate directory to source video files from. Falls back to directory if empty. |
+| fileEnding       | string | The filetype we should look for when choosing a source video. |
+| save       | yes/no | Whether we should save your outputs into a folder for later. |
+| saveDirectory.images       | string | The folder where we save generated images. |
+| saveDirectory.clips       | string | The folder where we save generated videos.  |
+| screenshot.imageCount       | integer | The number of images to send per tweet.|
+| screenshot.secondsApart       | integer | The gap time between images in a given tweet. |
+| clip.clipCount       | integer | The number of clips to send per tweet. |
+| clip.secondsApart       | integer | The gap time between clips in a given tweet. |
+| clip.clipLength       | integer  | The length of a single clip within a tweet. |
+| clip.forceSubTrack       | 0/1 | If we should force videos to always display the sub track. |
+| chance.clip       | decimal | The odds of generating a video clip instead of a single image. |
+| chance.subtitleChance       | decimal | The odds of generating a clip/image withe the primary subtitle track burned in.|
 
 ### Future Enhancements
-* Burn in subtitles. (Currently soft-subtitles are not supported).
 * GUI setup tool.
 * Konakona OC ＼(^o^)／
 
@@ -90,4 +75,4 @@ This software is free and open-source software, licensed under the GPLv3. For mo
 ### Thanks
 Mevon, for his help with development and ability organize my pastebins and discord messages of ffmpeg commands. Check out his instance of this bot: [@MonogatariBotto](https://twitter.com/MonogatariBotto).
 
-Ophelia, for recommending that I pick Lucky Star as the source anime for the original bot.
+auranoir, for recommending that I pick Lucky Star as the source anime for the original bot.
