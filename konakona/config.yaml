@@ -5,7 +5,7 @@ twitter:
     tokenSecret:    ''
 
 directory:          ''
-altVidDirectory:	''
+altVidDirectory:    ''
 fileEnding:         '.mp4'
 
 save:               yes
