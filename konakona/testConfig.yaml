@@ -1,8 +1,8 @@
 twitter:
-    consumerKey:    '344eNCy2x2vqHGQrc42mCU2Pq'
-    consumerSecret: 'HwtiAg8i3x09PKEZJ4sGR55CKyN4LIIw5pIkgWQrvT8DgnaaWw'
-    token:          '1265126453299077125-YIXylvHC0AFEFaGMswsUJYMHrU1kOg'
-    tokenSecret:    'auF4PwtrtSyWj2SQOqQCj8OWHZeD4DGH9vVM89u6wUylA'
+    consumerKey:    'exampleexampleexampleexampleexampleexampleexampleexample'
+    consumerSecret: 'exampleexampleexampleexampleexampleexampleexample'
+    token:          'exampleexampleexample-exampleexampleexampleexample'
+    tokenSecret:    'exampleexampleexampleexampleexampleexample'
 
 directory:          '/media/max/Seagate Expansion Drive/Lucky Star/PrettySubtitles'
 altVidDirectory:    '/media/max/Seagate Expansion Drive/Lucky Star/PrettySubtitles'
