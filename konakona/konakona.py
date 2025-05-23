@@ -10,7 +10,7 @@ import tweepy
 def load_config():
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    with open(os.path.join(script_dir, 'testConfig.yaml'), 'r') as stream:
+    with open(os.path.join(script_dir, 'config.yaml'), 'r') as stream:
         data = yaml.safe_load(stream)
 
     settings = {

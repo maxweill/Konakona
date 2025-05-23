@@ -1,6 +1,7 @@
 /venv
 /konakona/konakona_old.py
 /konakona/out_*
+/konakona/testConfig.yaml
 /.idea/.gitignore
 /.idea/Konakona.iml
 /.idea/misc.xml
