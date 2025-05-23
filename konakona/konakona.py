@@ -3,15 +3,14 @@ import random
 import shutil
 import datetime
 import subprocess
-
+import requests
 import yaml
 import tweepy
-
 
 def load_config():
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    with open(os.path.join(script_dir, 'config.yaml'), 'r') as stream:
+    with open(os.path.join(script_dir, 'testConfig.yaml'), 'r') as stream:
         data = yaml.safe_load(stream)
 
     settings = {
@@ -92,9 +91,13 @@ def generate_screenshot_local(filepath, duration, image_count, seconds_apart, us
         output_name = f"out_{i}.png"
         output_name_list.append(output_name)
     
-    vfString="scale=1920:-1"
     if use_subtitles:
-        vfString="subtitles='"+filepath+"',"+vfString 
+        # Fix: Properly escape filepath for ffmpeg subtitles filter on Windows
+        # Replace backslashes with forward slashes and escape colons and special chars
+        escaped_filepath = filepath.replace('\\', '/').replace(':', '\\:').replace('[', '\\[').replace(']', '\\]')
+        vfString = f"subtitles='{escaped_filepath}',scale=1600:-1"
+    else:
+        vfString = "scale=1600:-1" 
     for i in range(image_count):
         script = [
             'ffmpeg', '-y',
@@ -110,8 +113,13 @@ def generate_screenshot_local(filepath, duration, image_count, seconds_apart, us
         ]
 
         random_time += seconds_apart
-        subprocess.call(script)
-
+        
+        print(f"FFmpeg command: {' '.join(script)}")
+        result = subprocess.call(script)
+        if result != 0:
+            print(f"FFmpeg failed with return code: {result}")
+        else:
+            print(f"Successfully created: {output_name_list[i]}")
     return output_name_list
 
 
@@ -127,10 +135,13 @@ def generate_clip_local(filepath, duration, clip_count, seconds_apart, clip_leng
         output_name = f"out_{i}.mp4"
         output_video_list.append(output_name)
     
-    print("use subtitles:"+str(use_subtitles))
-    vfString="scale=1280:-1"
     if use_subtitles:
-        vfString="subtitles='"+filepath+"',"+vfString 
+        # Fix: Properly escape filepath for ffmpeg subtitles filter on Windows
+        # Replace backslashes with forward slashes and escape colons and special chars
+        escaped_filepath = filepath.replace('\\', '/').replace(':', '\\:').replace('[', '\\[').replace(']', '\\]')
+        vfString = f"subtitles='{escaped_filepath}',scale=1920:-1:flags=lanczos"
+    else:
+        vfString = "scale=1920:-1:flags=lanczos"
     for i in range(clip_count):
         script = [
             'ffmpeg', '-y',
@@ -151,8 +162,14 @@ def generate_clip_local(filepath, duration, clip_count, seconds_apart, clip_leng
             output_video_list[i]
         ]
 
+        print(f"FFmpeg command: {' '.join(script)}")
+        result = subprocess.call(script)
+        if result != 0:
+            print(f"FFmpeg failed with return code: {result}")
+        else:
+            print(f"Successfully created: {output_video_list[i]}")
+
         random_time += clip_length + seconds_apart
-        subprocess.call(script)
 
     return output_video_list
 
@@ -188,19 +205,33 @@ def post_update(upload):
         consumer_key=config['consumer_key'],
         consumer_secret=config['consumer_secret'],
         access_token=config['token'],
-        access_token_secret=config['token_secret']
+        access_token_secret=config['token_secret'],
+        return_type=requests.Response
     )
+    try: update = client.create_tweet(text="", media_ids=media_ids, media_tagged_user_ids=[])
+    except tweepy.errors.HTTPException as e:
+        print(e.response.headers)
+    else: print(update.headers)
 
-    update = client.create_tweet(text="", media_ids=media_ids, media_tagged_user_ids=[])
-    print(update)
 
 
 def save_files(clip, output):
     output_path = config['save_clips'] if clip else config['save_images']
-    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S:%f')
+    # Fix: Remove colons from timestamp - invalid character in Windows filenames
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')
+    
+    # Fix: Ensure output directory exists
+    os.makedirs(output_path, exist_ok=True)
 
     for item in output:
-        shutil.move(item, output_path + timestamp + item)
+        # Use os.path.join for proper path handling
+        destination = os.path.join(output_path, f"{timestamp}_{item}")
+        try:
+            shutil.move(item, destination)
+        except FileNotFoundError as e:
+            print(f"Error moving file {item} to {destination}: {e}")
+        except OSError as e:
+            print(f"OS Error moving file {item} to {destination}: {e}")
 
 
 if __name__ == '__main__':
@@ -224,4 +255,4 @@ if __name__ == '__main__':
     post_update(output)
 
     if config['save']:
-        save_files(check_generate(config['chance_clip']), output)
+        save_files(generateClip, output)  # Fix: Use generateClip instead of calling check_generate again
