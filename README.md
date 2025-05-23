@@ -60,7 +60,7 @@ The settings.cfg file contains a number of variables.
 | clip.clipLength       | integer  | The length of a single clip within a tweet. |
 | clip.forceSubTrack       | 0/1 | If we should force videos to always display the sub track. |
 | chance.clip       | decimal | The odds of generating a video clip instead of a single image. |
-| chance.subtitleChance       | decimal | The odds of generating a clip/image withe the primary subtitle track burned in.|
+| chance.subtitle       | decimal | The odds of generating a clip/image withe the primary subtitle track burned in.|
 
 ### Future Enhancements
 * GUI setup tool.
