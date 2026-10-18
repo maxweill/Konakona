@@ -38,6 +38,7 @@ I personally run the bot as a cronjob on my home server. My job config is set to
 
 #### Configuration
 In the same directory as the konakona.py script is a configuration file, **config.yaml**. You will need to modify this file in order for the bot to function.
+To keep credentials out of the repo, you can point the bot at a different file (relative to konakona.py) by setting the `KONAKONA_CONFIG` environment variable, e.g. `KONAKONA_CONFIG=myConfig.yaml python3 konakona.py`.
 ##### Config Variables
 The settings.cfg file contains a number of variables.
 

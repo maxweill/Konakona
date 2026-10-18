@@ -3,14 +3,19 @@ import random
 import shutil
 import datetime
 import subprocess
+import time
 import requests
 import yaml
 import tweepy
+from requests_oauthlib import OAuth1Session
 
 def load_config():
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    with open(os.path.join(script_dir, 'config.yaml'), 'r') as stream:
+    # KONAKONA_CONFIG lets a deployment point at a private config (relative paths resolve against this script's directory)
+    config_path = os.path.join(script_dir, os.environ.get('KONAKONA_CONFIG', 'config.yaml'))
+
+    with open(config_path, 'r') as stream:
         data = yaml.safe_load(stream)
 
     settings = {
@@ -95,9 +100,9 @@ def generate_screenshot_local(filepath, duration, image_count, seconds_apart, us
         # Fix: Properly escape filepath for ffmpeg subtitles filter on Windows
         # Replace backslashes with forward slashes and escape colons and special chars
         escaped_filepath = filepath.replace('\\', '/').replace(':', '\\:').replace('[', '\\[').replace(']', '\\]')
-        vfString = f"subtitles='{escaped_filepath}',scale=1600:-1"
+        vfString = f"subtitles='{escaped_filepath}',scale=min(1920\\,iw):-2:flags=lanczos"
     else:
-        vfString = "scale=1600:-1" 
+        vfString = "scale=min(1920\\,iw):-2:flags=lanczos"
     for i in range(image_count):
         script = [
             'ffmpeg', '-y',
@@ -117,9 +122,8 @@ def generate_screenshot_local(filepath, duration, image_count, seconds_apart, us
         print(f"FFmpeg command: {' '.join(script)}")
         result = subprocess.call(script)
         if result != 0:
-            print(f"FFmpeg failed with return code: {result}")
-        else:
-            print(f"Successfully created: {output_name_list[i]}")
+            raise RuntimeError(f"FFmpeg failed with return code {result} for {output_name_list[i]}")
+        print(f"Successfully created: {output_name_list[i]}")
     return output_name_list
 
 
@@ -139,9 +143,9 @@ def generate_clip_local(filepath, duration, clip_count, seconds_apart, clip_leng
         # Fix: Properly escape filepath for ffmpeg subtitles filter on Windows
         # Replace backslashes with forward slashes and escape colons and special chars
         escaped_filepath = filepath.replace('\\', '/').replace(':', '\\:').replace('[', '\\[').replace(']', '\\]')
-        vfString = f"subtitles='{escaped_filepath}',scale=1920:-1:flags=lanczos"
+        vfString = f"subtitles='{escaped_filepath}',scale=min(1920\\,iw):-2:flags=lanczos"
     else:
-        vfString = "scale=1920:-1:flags=lanczos"
+        vfString = "scale=min(1920\\,iw):-2:flags=lanczos"
     for i in range(clip_count):
         script = [
             'ffmpeg', '-y',
@@ -165,9 +169,8 @@ def generate_clip_local(filepath, duration, clip_count, seconds_apart, clip_leng
         print(f"FFmpeg command: {' '.join(script)}")
         result = subprocess.call(script)
         if result != 0:
-            print(f"FFmpeg failed with return code: {result}")
-        else:
-            print(f"Successfully created: {output_video_list[i]}")
+            raise RuntimeError(f"FFmpeg failed with return code {result} for {output_video_list[i]}")
+        print(f"Successfully created: {output_video_list[i]}")
 
         random_time += clip_length + seconds_apart
 
@@ -182,23 +185,123 @@ def check_generate(chance_clip):
         return False
 
 
-def post_update(upload):
-    """
-    upload with the v1.1 API and post with the v2 API
-    I hate twitter
-    """
-    auth = tweepy.OAuth1UserHandler(
-        config['consumer_key'],
-        config['consumer_secret'],
-        config['token'],
-        config['token_secret']
-    )
-    api = tweepy.API(auth)
+_MEDIA_UPLOAD_URL = 'https://api.x.com/2/media/upload'
+_MEDIA_UPLOAD_INIT_URL = 'https://api.x.com/2/media/upload/initialize'
+_CHUNK_SIZE = 1 * 1024 * 1024  # 1 MB per chunk
 
+
+def _get_oauth_session():
+    return OAuth1Session(
+        config['consumer_key'],
+        client_secret=config['consumer_secret'],
+        resource_owner_key=config['token'],
+        resource_owner_secret=config['token_secret']
+    )
+
+
+def _compress_png_to_limit(filepath, max_bytes=5 * 1024 * 1024):
+    """Scale down a PNG using ffmpeg in 10% steps until it fits within max_bytes."""
+    if os.path.getsize(filepath) <= max_bytes:
+        return
+    # Get current dimensions via ffprobe
+    probe = subprocess.check_output([
+        'ffprobe', '-v', 'quiet',
+        '-select_streams', 'v:0',
+        '-show_entries', 'stream=width,height',
+        '-of', 'csv=p=0',
+        filepath
+    ]).decode().strip().split(',')
+    w, h = int(probe[0]), int(probe[1])
+    tmp = filepath + '.tmp.png'
+    while os.path.getsize(filepath) > max_bytes and w >= 400:
+        w = int(w * 0.9)
+        subprocess.call([
+            'ffmpeg', '-y', '-i', filepath,
+            '-vf', f'scale={w}:-2:flags=lanczos',
+            tmp
+        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        os.replace(tmp, filepath)
+    if os.path.exists(tmp):
+        os.remove(tmp)
+
+
+def _upload_image(oauth, filepath):
+    """Compress PNG to <5MB then upload via POST /2/media/upload."""
+    _compress_png_to_limit(filepath)
+    with open(filepath, 'rb') as f:
+        resp = oauth.post(
+            _MEDIA_UPLOAD_URL,
+            files={'media': ('media', f, 'image/png')},
+            data={'media_category': 'tweet_image'}
+        )
+    if not resp.ok:
+        print(f"[IMAGE UPLOAD] HTTP {resp.status_code}: {resp.text}")
+        resp.raise_for_status()
+    return resp.json()['data']['id']
+
+
+def _upload_video(oauth, filepath):
+    """Upload a video via the v2 chunked upload flow."""
+    file_size = os.path.getsize(filepath)
+
+    def _check(resp, step):
+        if not resp.ok:
+            print(f"[{step}] HTTP {resp.status_code}: {resp.text}")
+            resp.raise_for_status()
+
+    # INIT
+    resp = oauth.post(_MEDIA_UPLOAD_INIT_URL, json={
+        'media_type': 'video/mp4',
+        'total_bytes': file_size,
+        'media_category': 'tweet_video',
+    })
+    _check(resp, 'INIT')
+    media_id = resp.json()['data']['id']
+
+    # APPEND — POST /2/media/upload/{id}/append
+    append_url = f'{_MEDIA_UPLOAD_URL}/{media_id}/append'
+    with open(filepath, 'rb') as f:
+        segment_index = 0
+        while True:
+            chunk = f.read(_CHUNK_SIZE)
+            if not chunk:
+                break
+            resp = oauth.post(append_url, files={
+                'media': ('chunk', chunk, 'application/octet-stream'),
+                'segment_index': (None, str(segment_index)),
+            })
+            _check(resp, f'APPEND segment {segment_index}')
+            segment_index += 1
+
+    # FINALIZE — POST /2/media/upload/{id}/finalize
+    resp = oauth.post(f'{_MEDIA_UPLOAD_URL}/{media_id}/finalize')
+    _check(resp, 'FINALIZE')
+
+    # Poll STATUS until async video processing completes
+    processing_info = resp.json().get('data', {}).get('processing_info')
+    while processing_info:
+        state = processing_info.get('state')
+        if state == 'succeeded':
+            break
+        if state == 'failed':
+            raise RuntimeError(f"X media processing failed for {filepath}")
+        wait = processing_info.get('check_after_secs', 5)
+        time.sleep(wait)
+        resp = oauth.get(_MEDIA_UPLOAD_URL, params={'media_id': media_id})
+        _check(resp, 'STATUS')
+        processing_info = resp.json().get('data', {}).get('processing_info')
+
+    return media_id
+
+
+def post_update(upload):
+    oauth = _get_oauth_session()
     media_ids = []
     for item in upload:
-        response = api.media_upload(item)
-        media_id = response.media_id_string
+        if item.lower().endswith('.mp4'):
+            media_id = _upload_video(oauth, item)
+        else:
+            media_id = _upload_image(oauth, item)
         media_ids.append(media_id)
 
     client = tweepy.Client(
@@ -208,10 +311,14 @@ def post_update(upload):
         access_token_secret=config['token_secret'],
         return_type=requests.Response
     )
-    try: update = client.create_tweet(text="", media_ids=media_ids, media_tagged_user_ids=[])
+    try:
+        update = client.create_tweet(text="", media_ids=media_ids)
     except tweepy.errors.HTTPException as e:
         print(e.response.headers)
-    else: print(update.headers)
+        print(f"Tweet failed: {e}")
+        raise
+    else:
+        print(update.headers)
 
 
 

@@ -1,4 +1,8 @@
 /venv
+/venv.old-*
+__pycache__/
+/out_*
+/backup/
 /konakona/konakona_old.py
 /konakona/out_*
 /konakona/testConfig.yaml
